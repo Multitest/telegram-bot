@@ -10,14 +10,12 @@ var bot = new TelegramBot(token, {
 
 var code = 'telegram';
 var clients = new Array();
-var resultMultitest =
-  'http://www.multitest.ua/coordinates/internet-v-kvartiru/';
-var textCaption = 'Я multitest бот!';
-var textWelcome = 'Привет я multitest bot! Где Вы хотите найти интернет?';
+var textCaption = 'Мультитест Бот';
+var textWelcome = 'Привет, я Мультитест Бот, помогаю найти интернет где угодно. Мне говорят адрес, я проверяю покрытие по базе провайдеров и показываю что там есть - тарифы, отзывы. Денег не беру, готов попробовать?';
 var textError =
-  'Упс, мы не смогли распознать адрес. Введите свой адрес, например Киев, Николая Бажана просп. 32';
+  'Упс, я не смог распознать адрес. Введи свой точный адрес, например "Киев, Николая Бажана просп., 32"';
 var textResult =
-  'Ваш адрес %s? Тогда нажмите по ссылке и выбирайте лучший тариф!';
+  'Твой адрес %s? Тогда нажимай на ссылку и сравнивай тарифы';
 
 
 bot.on('message', function(msg) {
@@ -41,14 +39,18 @@ bot.on('message', function(msg) {
           address = data.results[0].formatted_address;
           lat = data.results[0].geometry.location.lat;
           lng = data.results[0].geometry.location.lng;
+          countryCode = getCountryCode(data.results[0].address_components);
+          site = getSiteUrl(countryCode);
+          connPath = getConnTypePath(site);
           bot.sendMessage(chatId,
             textResult
             .format(address), {
               caption: textCaption
             });
           bot.sendMessage(chatId,
-            '%s?lat=%s&lng=%s&address_text=%s&code=%s'.format(
-              resultMultitest, lat, lng, encodeURIComponent(address),
+
+            '%s/coordinates/internet-%s/?lat=%s&lng=%s&address_text=%s&code=%s'.format(
+              site, connPath, lat, lng, encodeURIComponent(address),
               code), {
               caption: textCaption
             });
@@ -62,3 +64,38 @@ bot.on('message', function(msg) {
     });
   }
 });
+
+function getCountryCode(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    var type = arr[i].types[0];
+    if(type == "country") {
+      var countryCode = arr[i].short_name;
+      return countryCode;
+    } 
+  }
+}
+
+function getSiteUrl(countryCode) {
+  var site = "https://www.multitest.me";
+
+  var countrySites = {
+    UA: "http://www.multitest.ua",
+    RU: "http://www.multitest.ru",
+    PL: "http://www.multitest.net.pl",
+    US: "http://www.multitest.co",
+  };
+
+  countryCode && countrySites[countryCode.toUpperCase()] && (site = countrySites[countryCode.toUpperCase()]);
+  return site;
+}
+
+function getConnTypePath(site) {
+  var paths = {
+    "http://www.multitest.ua": "v-kvartiru",
+    "http://www.multitest.ru": "v-kvartiru",
+    "http://www.multitest.net.pl": "w-mieszkanie",
+    "http://www.multitest.co": "apartment",
+    "https://www.multitest.me": "apartment"
+  },
+  return paths[site];
+}
