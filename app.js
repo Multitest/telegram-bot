@@ -3,7 +3,7 @@ var TelegramBot = require('node-telegram-bot-api');
 var geocoder = require('geocoder');
 var Promise = require('es6-promise').Promise;
 
-var token = 'token';
+var token = '178205201:AAFncviR9rjSmhHhsUzCksA1tlXdsArj5O0';
 var bot = new TelegramBot(token, {
   polling: true
 });

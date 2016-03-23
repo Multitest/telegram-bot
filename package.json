@@ -1,0 +1,14 @@
+{
+    "name": "chat-bot-Multitest",
+    "version": "0.0.1",
+    "description": "Multitest telegram bot",
+    "main": "app.js",
+    "repository": "https://github.com/Multitest/telegram-bot.git",
+    "author": "Dmitry Kalinin https://github.com/null-none",
+    "dependencies": {
+        "prototypes": "",
+        "node-telegram-bot-api": "",
+        "geocoder": "",
+        "es6-promise": ""
+    }
+}
